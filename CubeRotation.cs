@@ -4,11 +4,6 @@ using UnityEngine;
 
 namespace Utils
 {
-    public enum DIR
-    {
-        LEFT,RIGHT,FORWARD,BACK
-    }
-
     public class CubeRotation
     {
         // arrays with the rotations and position in each legal direction
@@ -29,7 +24,7 @@ namespace Utils
 
         float tickTime;
 
-        DIR direction;
+        Vector3 direction;
 
         float accumulatedTime = 0f;
 
@@ -74,38 +69,23 @@ namespace Utils
             return true;
         }
 
-        public bool SetDirection(DIR direction)
-        {
-            if(this.rolling)
-                return false;
-
-            this.direction = direction;
-
-            return true;
-        }
-
         public bool SetDirection(Vector3 direction)
         {
-            if(direction == Vector3.left)
+            if(this.rolling)
             {
-                return this.SetDirection(DIR.LEFT);
+                Debug.Log("Direction can not be changed. Cube is currently rolling!");
+                return false;
             }
-            else if(direction == Vector3.right)
+            else if(direction != Vector3.left && direction != Vector3.right && direction != Vector3.forward && direction != Vector3.back)
             {
-                return this.SetDirection(DIR.RIGHT);
-            }
-            else if(direction == Vector3.forward)
-            {
-                return this.SetDirection(DIR.FORWARD);
-            }
-            else if(direction == Vector3.back)
-            {
-                return this.SetDirection(DIR.BACK);
+                Debug.LogError($"Direction {direction} is not legal. It has to be {Vector3.left},{Vector3.right},{Vector3.forward} or {Vector3.back}!");
+                this.direction = Vector3.zero;
+                return false;
             }
             else
             {
-                Debug.LogError($"Direction {direction} is not legal. It has to be {Vector3.left},{Vector3.right},{Vector3.forward} or {Vector3.back}!");
-                return false;
+                this.direction = direction;
+                return true;
             }
         }
 
@@ -127,25 +107,27 @@ namespace Utils
             Quaternion q = Quaternion.identity;
             Vector3 v = Vector3.zero;
 
-            switch(this.direction)
+            if(this.direction == Vector3.left)
             {
-                case DIR.LEFT:
-                    v = rollPositionTableLeft[this.index];
-                    q = rollRotationTableLeft[this.index];
-                    break;
-                case DIR.RIGHT:
-                    v = rollPositionTableRight[this.index];
-                    q = rollRotationTableRight[this.index];
-                    break;
-                case DIR.FORWARD:
-                    v = rollPositionTableForward[this.index];
-                    q = rollRotationTableForward[this.index];
-                    break;
-                case DIR.BACK:
-                    v = rollPositionTableBack[this.index];
-                    q = rollRotationTableBack[this.index];
-                    break;
+                v = rollPositionTableLeft[this.index];
+                q = rollRotationTableLeft[this.index];
             }
+            if(this.direction == Vector3.right)
+            {
+                v = rollPositionTableRight[this.index];
+                q = rollRotationTableRight[this.index];
+            }
+            if(this.direction == Vector3.forward)
+            {
+                v = rollPositionTableForward[this.index];
+                q = rollRotationTableForward[this.index];
+            }
+            if(this.direction == Vector3.back)
+            {
+                v = rollPositionTableBack[this.index];
+                q = rollRotationTableBack[this.index];
+            }
+
 
             this.transform.position = v + this.startPosition;
             this.transform.rotation = q;    // rotation gets resettet on the first rotation step
