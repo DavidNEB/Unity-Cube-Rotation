@@ -9,7 +9,6 @@ Example:
     public class RollingCube : MonoBehaviour
     {
         Utils.CubeRotation cubeRotation;
-
         void Start()
         {
             this.cubeRotation = new Utils.CubeRotation(this.transform, Vector3.back, 180);
@@ -19,8 +18,27 @@ Example:
         {
             this.cubeRotation.Roll(Time.deltaTime);
 
-            // toggle rolling with the space key
-            if(Input.GetKeyDown(KeyCode.Space))
+            if(Input.GetKeyDown(KeyCode.UpArrow))
+            {
+                this.cubeRotation.SetDirection(Vector3.forward);
+                this.cubeRotation.StartRolling();
+            }
+            else if(Input.GetKeyDown(KeyCode.LeftArrow))
+            {
+                this.cubeRotation.SetDirection(Vector3.left);
+                this.cubeRotation.StartRolling();
+            }
+            else if(Input.GetKeyDown(KeyCode.RightArrow))
+            {
+                this.cubeRotation.SetDirection(Vector3.right);
+                this.cubeRotation.StartRolling();
+            }
+            else if(Input.GetKeyDown(KeyCode.DownArrow))
+            {
+                this.cubeRotation.SetDirection(Vector3.back);
+                this.cubeRotation.StartRolling();
+            }
+            else if(Input.GetKeyDown(KeyCode.Space))
             {
                 if(this.cubeRotation.rolling)
                 {
@@ -33,3 +51,4 @@ Example:
             }
         }
     }
+
