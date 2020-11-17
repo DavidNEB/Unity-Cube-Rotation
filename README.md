@@ -6,30 +6,30 @@ Class to rotate a cube in any of the four directions.
 
 Example:
 
-public class RollingCube : MonoBehaviour
-{
-    Utils.CubeRotation cubeRotation;
-    
-    void Start()
+    public class RollingCube : MonoBehaviour
     {
-        this.cubeRotation = new Utils.CubeRotation(this.transform, Vector3.back, 180);
-    }
+        Utils.CubeRotation cubeRotation;
 
-    void Update()
-    {
-        this.cubeRotation.Roll(Time.deltaTime);
-        
-        // toggle rolling with the space key
-        if(Input.GetKeyDown(KeyCode.Space))
+        void Start()
         {
-            if(this.cubeRotation.rolling)
+            this.cubeRotation = new Utils.CubeRotation(this.transform, Vector3.back, 180);
+        }
+
+        void Update()
+        {
+            this.cubeRotation.Roll(Time.deltaTime);
+
+            // toggle rolling with the space key
+            if(Input.GetKeyDown(KeyCode.Space))
             {
-                this.cubeRotation.StopRolling();
-            }
-            else
-            {
-                this.cubeRotation.StartRolling();
+                if(this.cubeRotation.rolling)
+                {
+                    this.cubeRotation.StopRolling();
+                }
+                else
+                {
+                    this.cubeRotation.StartRolling();
+                }
             }
         }
     }
-}
