@@ -1,5 +1,6 @@
 # Unity-Cube-Rotation
 Class to rotate a cube in any of the four directions.
+It creates a lookup table with the rotations and directions fo the rotation. When rolling it takes the proper index of the table to determine the rotation and position.
 
 
 
