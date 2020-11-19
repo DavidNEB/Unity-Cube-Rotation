@@ -33,7 +33,7 @@ namespace Utils
         public CubeRotation(Transform transform, Vector3 direction, float rotationSpeed)
         {
             this.rolling = false;
-            this.steps = 100;
+            this.steps = 60;        // this caps the maximal steps per second
             this.startPosition = transform.position;
             this.transform = transform;
             this.SetDirection(direction);
@@ -41,10 +41,10 @@ namespace Utils
 
             if(!initiated)
             {
-                this.CalculateRollRotations(out rollRotationTableLeft, out rollPositionTableLeft, this.steps, Vector3.left);
-                this.CalculateRollRotations(out rollRotationTableRight, out rollPositionTableRight, this.steps, Vector3.right);
-                this.CalculateRollRotations(out rollRotationTableForward, out rollPositionTableForward, this.steps, Vector3.forward);
-                this.CalculateRollRotations(out rollRotationTableBack, out rollPositionTableBack, this.steps, Vector3.back);
+                this.CalculateRollRotations(out rollRotationTableLeft, out rollPositionTableLeft, Vector3.left);
+                this.CalculateRollRotations(out rollRotationTableRight, out rollPositionTableRight, Vector3.right);
+                this.CalculateRollRotations(out rollRotationTableForward, out rollPositionTableForward, Vector3.forward);
+                this.CalculateRollRotations(out rollRotationTableBack, out rollPositionTableBack, Vector3.back);
                 initiated = true;
             }
         }
@@ -89,7 +89,7 @@ namespace Utils
             }
         }
 
-        public void Roll(float deltaTime)
+        public void Roll(float deltaTime, bool stopWhenFinished = false)
         {
             // if not rolling, dont roll
             if(!this.rolling)
@@ -97,10 +97,13 @@ namespace Utils
             
             // count up
             this.accumulatedTime += deltaTime;
-            if(this.accumulatedTime <= this.tickTime)
-            {
+
+            int ratio = (int)(this.accumulatedTime/this.tickTime);
+            if(ratio < 1)
                 return;
-            }
+            
+            this.accumulatedTime = 0f;
+            
             // reset time
             this.accumulatedTime = 0f;
 
@@ -132,16 +135,17 @@ namespace Utils
             this.transform.position = v + this.startPosition;
             this.transform.rotation = q;    // rotation gets resettet on the first rotation step
 
-            this.index++;
+            index += ratio;
             if(this.index >= rollRotationTableLeft.Length)
             {
                 this.startPosition = this.transform.position;
                 this.index = 0;
-                this.StopRolling();
+                if(stopWhenFinished)
+                    this.StopRolling();
             }
         }
 
-        void CalculateRollRotations(out Quaternion[] rotations, out Vector3[] positions, int steps, Vector3 direction)
+        void CalculateRollRotations(out Quaternion[] rotations, out Vector3[] positions, Vector3 direction)
         {
             // assign out parameter
             rotations = new Quaternion[steps];
